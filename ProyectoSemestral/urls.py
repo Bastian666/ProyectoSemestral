@@ -24,4 +24,7 @@ urlpatterns = [
     path('registro/', views.registro, name='registro'),
     path('logout/', views.signout, name='logout'),
     path('ingresar/', views.signin, name='ingresar'),
+    path('agregarProd/', views.agregarProd, name='agregarProd'),
+    path('productos/', views.productos, name='productos'),
+    path('productos/<int:producto_id>/', views.detalleProd, name='detalleProd'),
 ]

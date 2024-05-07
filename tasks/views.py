@@ -1,10 +1,12 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
+from .forms import ProductoForm
+from .models import Productos
 
 # Create your views here.
 
@@ -55,3 +57,30 @@ def signin(request):
             login(request, user)
             return redirect('home')
         
+def agregarProd(request):
+
+    if request.method == 'GET':
+            return render(request, 'agregarProd.html', {
+        'form': ProductoForm
+    })
+    else:
+        try:
+         form = ProductoForm(request.POST)
+         nuevo_producto = form.save(commit=False)
+         nuevo_producto.user = request.user
+         nuevo_producto.save()
+         return redirect('home')
+        except ValueError:
+            return render(request, 'agregarProd.html', {
+                'form' : ProductoForm,
+                'error': 'Ingrese información valida'
+            })
+
+def productos(request):
+    productos = Productos.objects.all()
+
+    return render(request, 'productos.html', {'productos': productos})
+
+def detalleProd(request, producto_id):
+    producto = get_object_or_404(Productos, pk=producto_id)
+    return render(request, 'detalleProd.html', {'producto': producto})
