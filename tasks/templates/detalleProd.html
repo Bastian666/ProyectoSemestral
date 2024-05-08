@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <h3>Nombre del producto: {{producto.nombre}}</h3> 
+
+    {{error}}
+
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        
+        <button>
+            Actualizar
+        </button>
+    </form>
+
+    <form action="{% url 'eliminarProd' producto.id %}" method="POST">
+        {% csrf_token %}
+        <button>
+            Eliminar
+        </button>
+    </form>
+
+{% endblock %}
