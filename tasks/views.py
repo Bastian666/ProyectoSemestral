@@ -95,3 +95,10 @@ def detalleProd(request, producto_id):
         except ValueError:
             return render(request, 'detalleProd.html', {'producto': producto, 'form': form,
             'error': "Error al actualizar el producto"})
+        
+def eliminarProd(request, producto_id):
+    producto = get_object_or_404(Productos, pk=producto_id)
+    if request.method == 'POST':
+        producto.delete()
+        return redirect('productos')
+

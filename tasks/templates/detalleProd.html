@@ -15,4 +15,11 @@
         </button>
     </form>
 
+    <form action="{% url 'eliminarProd' producto.id %}" method="POST">
+        {% csrf_token %}
+        <button>
+            Eliminar
+        </button>
+    </form>
+
 {% endblock %}
