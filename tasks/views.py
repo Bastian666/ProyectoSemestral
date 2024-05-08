@@ -82,5 +82,16 @@ def productos(request):
     return render(request, 'productos.html', {'productos': productos})
 
 def detalleProd(request, producto_id):
-    producto = get_object_or_404(Productos, pk=producto_id)
-    return render(request, 'detalleProd.html', {'producto': producto})
+    if request.method == 'GET':
+        producto = get_object_or_404(Productos, pk=producto_id)
+        form = ProductoForm(instance=producto)
+        return render(request, 'detalleProd.html', {'producto': producto, 'form' : form})
+    else:
+        try:
+            producto = get_object_or_404(Productos, pk=producto_id)
+            form = ProductoForm(request.POST, instance=producto)
+            form.save()
+            return redirect('productos')
+        except ValueError:
+            return render(request, 'detalleProd.html', {'producto': producto, 'form': form,
+            'error': "Error al actualizar el producto"})
