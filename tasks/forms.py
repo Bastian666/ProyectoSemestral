@@ -4,4 +4,4 @@ from .models import Productos
 class ProductoForm(ModelForm):
     class Meta:
         model = Productos
-        fields = ['nombre', 'descripcion', 'stock']
+        fields = ['nombre', 'descripcion', 'categoria', 'stock', 'precio', 'imagen']

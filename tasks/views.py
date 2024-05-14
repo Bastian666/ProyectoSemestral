@@ -65,7 +65,7 @@ def agregarProd(request):
     })
     else:
         try:
-         form = ProductoForm(request.POST)
+         form = ProductoForm(request.POST, request.FILES)
          nuevo_producto = form.save(commit=False)
          nuevo_producto.user = request.user
          nuevo_producto.save()
