@@ -65,7 +65,7 @@ def agregarProd(request):
     })
     else:
         try:
-         form = ProductoForm(request.POST)
+         form = ProductoForm(request.POST, request.FILES)
          nuevo_producto = form.save(commit=False)
          nuevo_producto.user = request.user
          nuevo_producto.save()
@@ -89,7 +89,7 @@ def detalleProd(request, producto_id):
     else:
         try:
             producto = get_object_or_404(Productos, pk=producto_id)
-            form = ProductoForm(request.POST, instance=producto)
+            form = ProductoForm(request.POST, request.FILES, instance=producto)
             form.save()
             return redirect('productos')
         except ValueError:
