@@ -2,24 +2,35 @@
 
 {% block content %}
 
-    <h3>Nombre del producto: {{producto.nombre}}</h3> 
-
-    {{error}}
-
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{form.as_p}}
-        
-        <button>
-            Actualizar
-        </button>
-    </form>
-
-    <form action="{% url 'eliminarProd' producto.id %}" method="POST">
-        {% csrf_token %}
-        <button>
-            Eliminar
-        </button>
-    </form>
+<main class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 mt-4">
+            <div class="card shadow-sm">
+                <div class="card-header text-center">
+                    <h3>Nombre del producto: <br> {{ producto.nombre }}</h3>
+                </div>
+                <div class="card-body">
+                    {{ error }}
+                    <form method="POST" enctype="multipart/form-data" class="mb-3">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-success w-100 mb-2">
+                            <i class="fas fa-save"></i> Actualizar
+                        </button>
+                    </form>
+                    <form action="{% url 'eliminarProd' producto.id %}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este producto?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100 mb-2">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                    </form>
+                    <a href="{% url 'productos' %}" class="btn btn-secondary w-100">
+                        <i class="fas fa-arrow-left"></i> Volver a Productos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
 
 {% endblock %}

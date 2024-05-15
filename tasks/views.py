@@ -7,13 +7,15 @@ from django.contrib.auth import login, logout, authenticate
 from django.db import IntegrityError
 from .forms import ProductoForm
 from .models import Productos
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
 def home(request):
-    return render(request, 'home.html')
+    productos = Productos.objects.all()  # Obtén todos los productos
+    return render(request, 'home.html', {'productos': productos})
 
-
+#REGISTRARSE EN EL SISTEMA
 def registro (request):
     if request.method == 'GET':
         return render(request, 'registro.html', {
@@ -25,7 +27,7 @@ def registro (request):
                 user = User.objects.create_user(username=request.POST['username'], password=request.POST['password1'])
                 user.save()
                 login(request, user)
-                return HttpResponse('Usuario creado correctamente')
+                return redirect('home')
             except IntegrityError:
                 return render(request, 'registro.html', {
                 'form': UserCreationForm,
@@ -35,11 +37,14 @@ def registro (request):
                 'form': UserCreationForm,
                 "error": 'Las contraseñas no coinciden'
                 })
-    
+
+#SALIR DE LA SESIÓN
+@login_required 
 def signout(request):
     logout(request)
     return redirect('home')
 
+#INICIAR SESIÓN
 def signin(request):
     if request.method == 'GET':
             return render(request, 'ingresar.html', {
@@ -56,36 +61,50 @@ def signin(request):
         else:
             login(request, user)
             return redirect('home')
-        
+
+@login_required
 def agregarProd(request):
+    if request.user.username != "admin":
+        # Si el usuario no es "admin", redirigirlo a la página de inicio ('home')
+        return redirect('home')
 
     if request.method == 'GET':
-            return render(request, 'agregarProd.html', {
-        'form': ProductoForm
-    })
+        return render(request, 'agregarProd.html', {
+            'form': ProductoForm()
+        })
     else:
         try:
-         form = ProductoForm(request.POST, request.FILES)
-         nuevo_producto = form.save(commit=False)
-         nuevo_producto.user = request.user
-         nuevo_producto.save()
-         return redirect('home')
+            form = ProductoForm(request.POST, request.FILES)
+            nuevo_producto = form.save(commit=False)
+            nuevo_producto.user = request.user
+            nuevo_producto.save()
+            return redirect('home')
         except ValueError:
             return render(request, 'agregarProd.html', {
-                'form' : ProductoForm,
-                'error': 'Ingrese información valida'
+                'form': ProductoForm(),
+                'error': 'Ingrese información válida'
             })
 
+@login_required
 def productos(request):
-    productos = Productos.objects.all()
+    if request.user.username != "admin":
+        # Si el usuario no es "admin", redirigirlo a la página de inicio ('home')
+        return redirect('home')
 
-    return render(request, 'productos.html', {'productos': productos})
+    # Si el usuario es "admin", mostrar la página de productos
+    productos = Productos.objects.all()  # Suponiendo que tienes un modelo Producto
+    return render(request, "productos.html", {"productos": productos})
 
+@login_required
 def detalleProd(request, producto_id):
+    if request.user.username != "admin":
+        # Si el usuario no es "admin", redirigirlo a la página de inicio ('home')
+        return redirect('home')
+
     if request.method == 'GET':
         producto = get_object_or_404(Productos, pk=producto_id)
         form = ProductoForm(instance=producto)
-        return render(request, 'detalleProd.html', {'producto': producto, 'form' : form})
+        return render(request, 'detalleProd.html', {'producto': producto, 'form': form})
     else:
         try:
             producto = get_object_or_404(Productos, pk=producto_id)
@@ -93,9 +112,13 @@ def detalleProd(request, producto_id):
             form.save()
             return redirect('productos')
         except ValueError:
-            return render(request, 'detalleProd.html', {'producto': producto, 'form': form,
-            'error': "Error al actualizar el producto"})
-        
+            return render(request, 'detalleProd.html', {
+                'producto': producto,
+                'form': form,
+                'error': "Error al actualizar el producto"
+            })
+
+@login_required     
 def eliminarProd(request, producto_id):
     producto = get_object_or_404(Productos, pk=producto_id)
     if request.method == 'POST':

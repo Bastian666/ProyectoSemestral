@@ -1,25 +1,38 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h1>Productos</h1>
 
-<ul>
-    {% for producto in productos %}
+<main class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1 class="text-center display-2 py-5">Productos</h1>
 
-        <li>
-            <a href="{% url 'detalleProd' producto.id %}">
-                <h3>Nombre del producto: {{producto.nombre}}</h3> 
-                <p>Descripción del producto: {{producto.descripcion}}</p>
-                <p>Categoria: {{producto.categoria}}</p>
-                <p>Stock: {{producto.stock}}</p>
-                <p>Precio: {{producto.precio}}</p>
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{% url 'agregarProd' %}" class="btn btn-success">Agregar Producto</a>
+            </div>
 
-                {% if producto.imagen %}
-                    <img src="{{ producto.imagen.url }}" width=80>
-                {% endif %}
-            </a>
-        </li>
+            <ul class="list-group">
+                {% for producto in productos %}
+                <a class="list-group-item list-group-item-action flex-column align-items-start mb-3 shadow-sm p-3 rounded" href="{% url 'detalleProd' producto.id %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <div class="flex-grow-1 me-3">
+                            <h3 class="fw-bold text-primary">Nombre del producto: {{ producto.nombre }}</h3>
+                            <p class="mb-1"><strong>Descripción del producto:</strong> {{ producto.descripcion }}</p>
+                            <p class="mb-1"><strong>Categoria:</strong> {{ producto.categoria }}</p>
+                            <p class="mb-1"><strong>Stock:</strong> {{ producto.stock }}</p>
+                            <p class="mb-1"><strong>Precio:</strong> ${{ producto.precio }}</p>
+                        </div>
+                        <div class="flex-shrink-0">
+                            {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" width="80" class="img-thumbnail" alt="{{ producto.nombre }}">
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</main>
 
-    {% endfor %}
-</ul>
 {% endblock %}
