@@ -118,6 +118,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+LOGIN_URL = '/ingresar'
+
 import os
 
 MEDIA_URL = '/media/'

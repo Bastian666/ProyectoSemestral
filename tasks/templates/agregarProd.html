@@ -1,17 +1,27 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>Agregar Productos</h1>
 
-    <form action="/agregarProd/" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{error}}
-        {{form.as_p}}
+<main class="container">
+    <div class="row">
+        <div class="col-md-4 offset-md-4 mt-4">
+            <h1 class="text-center">Agregar Productos</h1>
 
-        <button>
-            Agregar
-        </button>
+            <form action="/agregarProd/" method="POST" enctype="multipart/form-data" class="card card-body">
+                {% csrf_token %}
+                {{ error }}
+                {{ form.as_p }}
 
-    </form>
+                <button type="submit" class="btn btn-success mb-2">
+                    Agregar
+                </button>
+                
+                <a href="{% url 'productos' %}" class="btn btn-secondary">
+                    Volver a Productos
+                </a>
+            </form>
+        </div>
+    </div>
+</main>
 
 {% endblock %}
