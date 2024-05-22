@@ -24,26 +24,37 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav">
+                {% if user.is_authenticated and user.username != "admin" %}
                 <li class="nav-item">
-                    <a href="/" class="nav-link">Inicio</a>
+                    <a href="/productos" class="nav-link">Productos</a>
                 </li>
-                <li class="nav-item">
-                    <a href="/ingresar" class="nav-link">Iniciar Sesión</a>
+                <li class="nav-item d-flex align-items-center"> <!-- Utiliza clases de Bootstrap para centrar verticalmente -->
+                    <a class="navbar-brand" href="/carrito">
+                        <i class="fas fa-shopping-cart me-2"></i> Carrito <!-- Agrega la clase me-2 para un pequeño espacio a la derecha del icono -->
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a href="/registro" class="nav-link">Registrarse</a>
-                </li>
-                {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a href="/logout" class="nav-link">Salir</a>
-                </li>
+                
                 {% endif %}
                 {% if user.is_authenticated and user.username == "admin" %}
-                <!-- Mostrar solo si el usuario es admin -->
-                <li class="nav-item">
-                    <a href="/productos" class="nav-link">Gestión de productos</a>
-                </li>
+                    <li class="nav-item">
+                        <a href="/productos" class="nav-link">Gestión de productos</a>
+                    </li>
+                {% endif %}
+            </ul>
+            <ul class="navbar-nav ms-auto">
+                {% if not user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="/ingresar" class="nav-link">Iniciar Sesión</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/registro" class="nav-link">Registrarse</a>
+                    </li>
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a href="/logout" class="nav-link">Salir</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>

@@ -1,8 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
-
-# Create your models here.
 
 class Productos(models.Model):
     nombre = models.CharField(max_length=100)
@@ -15,3 +14,19 @@ class Productos(models.Model):
 
     def __str__(self):
         return self.nombre + '- by ' + self.user.username
+
+    def clean(self):
+        if self.stock < 0:
+            raise ValidationError('El stock no puede ser menor que cero.')
+
+class Carrito(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    productos = models.ManyToManyField(Productos, through='ItemCarrito')
+
+class ItemCarrito(models.Model):
+    carrito = models.ForeignKey(Carrito, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Productos, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(default=1)
+
+    def subtotal(self):
+        return self.producto.precio * self.cantidad

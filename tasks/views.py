@@ -8,6 +8,8 @@ from django.db import IntegrityError
 from .forms import ProductoForm
 from .models import Productos
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, get_object_or_404
+from .models import Carrito, ItemCarrito
 
 # Create your views here.
 
@@ -87,13 +89,12 @@ def agregarProd(request):
 
 @login_required
 def productos(request):
-    if request.user.username != "admin":
-        # Si el usuario no es "admin", redirigirlo a la página de inicio ('home')
-        return redirect('home')
+    productos = Productos.objects.all()
+    if request.user.username == "admin":
+        return render(request, "productos.html", {"productos": productos})
+    else:
+        return render(request, "productosUser.html", {"productos": productos})
 
-    # Si el usuario es "admin", mostrar la página de productos
-    productos = Productos.objects.all()  # Suponiendo que tienes un modelo Producto
-    return render(request, "productos.html", {"productos": productos})
 
 @login_required
 def detalleProd(request, producto_id):
@@ -101,22 +102,32 @@ def detalleProd(request, producto_id):
         # Si el usuario no es "admin", redirigirlo a la página de inicio ('home')
         return redirect('home')
 
-    if request.method == 'GET':
-        producto = get_object_or_404(Productos, pk=producto_id)
-        form = ProductoForm(instance=producto)
-        return render(request, 'detalleProd.html', {'producto': producto, 'form': form})
-    else:
-        try:
-            producto = get_object_or_404(Productos, pk=producto_id)
-            form = ProductoForm(request.POST, request.FILES, instance=producto)
-            form.save()
-            return redirect('productos')
-        except ValueError:
+    producto = get_object_or_404(Productos, pk=producto_id)
+
+    if request.method == 'POST':
+        form = ProductoForm(request.POST, request.FILES, instance=producto)
+        if form.is_valid():
+            nuevo_stock = form.cleaned_data['stock']
+            if nuevo_stock >= 0:
+                form.save()
+                return redirect('productos')
+            else:
+                return render(request, 'detalleProd.html', {
+                    'producto': producto,
+                    'form': form,
+                    'error': "El stock no puede ser menor que cero."
+                })
+        else:
             return render(request, 'detalleProd.html', {
                 'producto': producto,
                 'form': form,
-                'error': "Error al actualizar el producto"
+                'error': "Error en los datos del formulario."
             })
+
+    else:
+        form = ProductoForm(instance=producto)
+        return render(request, 'detalleProd.html', {'producto': producto, 'form': form})
+
 
 @login_required     
 def eliminarProd(request, producto_id):
@@ -125,3 +136,42 @@ def eliminarProd(request, producto_id):
         producto.delete()
         return redirect('productos')
 
+@login_required
+def agregar_al_carrito(request, producto_id):
+    producto = get_object_or_404(Productos, pk=producto_id)
+    if producto.stock > 0:
+        carrito, created = Carrito.objects.get_or_create(usuario=request.user)
+        item, item_created = ItemCarrito.objects.get_or_create(carrito=carrito, producto=producto)
+        if not item_created:
+            item.cantidad += 1
+        item.save()
+        producto.stock -= 1
+        producto.save()
+    return redirect('productos')
+
+
+@login_required
+def ver_carrito(request):
+    carrito, created = Carrito.objects.get_or_create(usuario=request.user)
+    items = carrito.itemcarrito_set.all()
+    total = sum(item.producto.precio * item.cantidad for item in items)
+    return render(request, 'carrito.html', {'items': items, 'total': total})
+
+@login_required
+def eliminar_del_carrito(request, item_id):
+    item = get_object_or_404(ItemCarrito, pk=item_id)
+    producto = item.producto
+    producto.stock += item.cantidad
+    producto.save()
+    item.delete()
+    return redirect('carrito')
+
+@login_required
+def vaciar_carrito(request):
+    carrito, created = Carrito.objects.get_or_create(usuario=request.user)
+    items = carrito.itemcarrito_set.all()
+    for item in items:
+        item.producto.stock += item.cantidad
+        item.producto.save()
+        item.delete()  # Elimina cada item individualmente
+    return redirect('carrito')
