@@ -95,9 +95,8 @@
                             <img src="{{ producto.imagen.url }}" class="card-img-top img-fluid" alt="{{ producto.nombre }}" style="height: 300px; object-fit: cover; width: 100%;">
                             {% endif %}
                             <div class="card-body">
-                                <h5 class="card-title text-primary">Nombre: {{ producto.nombre }}</h5>
-                                <p class="card-text"><strong>Precio:</strong> ${{ producto.precio }}</p>
-                                <p class="card-text"><strong>Stock:</strong> {{ producto.stock }}</p>
+                                <h5 class="card-title text-primary">Producto: {{ producto.nombre }}</h5>
+                                <p class="card-text"><strong>Valor:</strong> ${{ producto.precio }}</p>
                             </div>
                         </div>
                     </div>
@@ -152,6 +151,7 @@
                 </div>
             </div>
         </section>
+       <!-- Api en html -->
     </main>
 
     <footer style="text-align: center; background: #111; color: #fff">

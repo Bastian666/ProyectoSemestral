@@ -10,6 +10,7 @@ from .models import Productos
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404
 from .models import Carrito, ItemCarrito
+import requests
 
 # Create your views here.
 
@@ -154,17 +155,33 @@ def agregar_al_carrito(request, producto_id):
 def ver_carrito(request):
     carrito, created = Carrito.objects.get_or_create(usuario=request.user)
     items = carrito.itemcarrito_set.all()
-    total = sum(item.producto.precio * item.cantidad for item in items)
-    return render(request, 'carrito.html', {'items': items, 'total': total})
+    total_real = sum(item.producto.precio * item.cantidad for item in items)
+    
+    # Calcular el IVA (19% del total real)
+    iva = total_real * 0.19
+    
+    total_con_iva = total_real + iva
+    
+    return render(request, 'carrito.html', {'items': items, 'total_real': total_real, 'total_con_iva': total_con_iva, 'iva': iva})
+
+
 
 @login_required
 def eliminar_del_carrito(request, item_id):
     item = get_object_or_404(ItemCarrito, pk=item_id)
     producto = item.producto
-    producto.stock += item.cantidad
-    producto.save()
-    item.delete()
+
+    if item.cantidad > 1:
+        # Eliminar una unidad
+        item.cantidad -= 1
+        item.save()
+    else:
+        # Eliminarlo por completo del carrito
+        item.delete()
+
+    # Redirigir a la página del carrito
     return redirect('carrito')
+
 
 @login_required
 def vaciar_carrito(request):
@@ -175,3 +192,4 @@ def vaciar_carrito(request):
         item.producto.save()
         item.delete()  # Elimina cada item individualmente
     return redirect('carrito')
+
