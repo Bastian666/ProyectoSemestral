@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script>
+    function eliminarItem(item_id) {
+        const form = document.getElementById('eliminarForm' + item_id);
+        if (form) {
+            form.submit();
+            
+            fetch('/carrito/actualizar_stock/' + item_id + '/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    cantidad: 1  
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Stock actualizado');
+                } else {
+                    console.error('Error al actualizar el stock');
+                }
+            })
+            .catch(error => console.error('Error en la solicitud:', error));
+        }
+    }
+</script>
+
+<div class="container mt-5">
+    <h1 class="text-center">Carrito Rogers</h1>
+    <div class="row">
+        <div class="col-md-8">
+            <ul class="list-group mb-3">
+                {% for item in items %}
+                <li class="list-group-item d-flex justify-content-between lh-sm">
+                    <div>
+                        <h6 class="my-0">{{ item.producto.nombre }}</h6>
+                        <small class="text-muted">{{ item.producto.descripcion }}</small>
+                    </div>
+                    <span class="text-muted">${{ item.producto.precio }} x {{ item.cantidad }} = ${{ item.subtotal }}</span>
+                    <form id="eliminarForm{{ item.id }}" action="{% url 'eliminar_del_carrito' item.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="button" onclick="eliminarItem('{{ item.id }}')" class="btn btn-danger btn-sm">Eliminar</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-4">
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Total</span>
+                <span class="badge bg-primary rounded-pill">${{ total_real }}</span>
+            </h4>
+            <p class="text-muted">IVA (19%): ${{ iva }}</p>
+            <h4 class="d-flex justify-content-between align-items-center mb-3">
+                <span class="text-muted">Total IVA</span>
+                <span class="badge bg-primary rounded-pill">${{ total_con_iva }}</span>
+            </h4>
+        </div>
+        <form action="{% url 'vaciar_carrito' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-lg btn-block">Vaciar Carrito</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
