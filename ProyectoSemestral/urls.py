@@ -18,7 +18,9 @@ urlpatterns = [
     path('carrito/agregar/<int:producto_id>/', views.agregar_al_carrito, name='agregar_al_carrito'),
     path('carrito/eliminar/<int:item_id>/', views.eliminar_del_carrito, name='eliminar_del_carrito'),
     path('carrito/vaciar/', views.vaciar_carrito, name='vaciar_carrito'),
-    path('carrito/actualizar_stock/<int:producto_id>/', views.actualizar_stock, name='actualizar_stock'),  # Nueva ruta para actualizar el stock del producto
+    path('carrito/actualizar_stock/<int:producto_id>/', views.actualizar_stock, name='actualizar_stock'),  
+        path('favoritos/', views.favoritos, name='favoritos'),
+         path('toggle_favorito/<int:producto_id>/', views.toggle_favorito, name='toggle_favorito'),
 ]
 
 if settings.DEBUG:

@@ -10,6 +10,7 @@ from .models import Productos
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, get_object_or_404
 from .models import Carrito, ItemCarrito
+from .models import Favoritos
 import requests
 
 # Create your views here.
@@ -94,7 +95,32 @@ def productos(request):
     if request.user.username == "admin":
         return render(request, "productos.html", {"productos": productos})
     else:
-        return render(request, "productosUser.html", {"productos": productos})
+        favoritos_usuario, created = Favoritos.objects.get_or_create(usuario=request.user)
+        return render(request, "productosUser.html", {"productos": productos, "favoritos_usuario": favoritos_usuario})
+
+
+@login_required
+@login_required
+def toggle_favorito(request, producto_id):
+    producto = get_object_or_404(Productos, id=producto_id)
+    usuario = request.user
+    favoritos_usuario, created = Favoritos.objects.get_or_create(usuario=usuario)
+    
+    if producto in favoritos_usuario.productos.all():
+        favoritos_usuario.productos.remove(producto)
+    else:
+        favoritos_usuario.productos.add(producto)
+    
+    return redirect('productos')
+
+@login_required
+def favoritos(request):
+    usuario = request.user
+    favoritos_usuario, created = Favoritos.objects.get_or_create(usuario=usuario)
+    productos_favoritos = favoritos_usuario.productos.all()
+    
+    return render(request, "favoritos.html", {"productos_favoritos": productos_favoritos})
+
 
 
 @login_required

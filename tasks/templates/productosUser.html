@@ -13,12 +13,25 @@
                         <p class="card-text">{{ producto.descripcion }}</p>
                         <p class="card-text">Precio: ${{ producto.precio }}</p>
                         <p class="card-text">Stock Disponible: {{ producto.stock }}</p>
+                        <form action="{% url 'agregar_al_carrito' producto.id %}" method="POST" style="display: inline-block;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa fa-shopping-cart"></i> Agregar al Carrito
+                            </button>
+                        </form>
+                        <br>
                         {% if request.user.is_authenticated and request.user.username != 'admin' %}
-                            <form action="{% url 'agregar_al_carrito' producto.id %}" method="POST">
+                            <form action="{% url 'toggle_favorito' producto.id %}" method="POST" style="display: inline-block;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-shopping-cart"></i> Agregar al Carrito
-                                </button>
+                                {% if producto in favoritos_usuario.productos.all %}
+                                    <button type="submit" class="btn btn-warning" id="quitarFavorito{{ producto.id }}">
+                                        <i class="fa fa-star"></i> Quitar de Favoritos
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-outline-warning" id="agregarFavorito{{ producto.id }}">
+                                        <i class="fa fa-star"></i> Agregar a Favoritos
+                                    </button>
+                                {% endif %}
                             </form>
                         {% endif %}
                     </div>

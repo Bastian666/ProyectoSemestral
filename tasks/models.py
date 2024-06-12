@@ -30,3 +30,9 @@ class ItemCarrito(models.Model):
 
     def subtotal(self):
         return self.producto.precio * self.cantidad
+
+class Favoritos(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE)
+    productos = models.ManyToManyField(Productos, related_name='usuarios_favoritos', blank=True)
+
+
