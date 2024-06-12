@@ -11,6 +11,22 @@
         .navbar-brand {
             font-family: 'Quicksand', cursive;
         }
+        .navbar-nav .nav-item {
+            padding: 0 10px;
+        }
+        @media (max-width: 767px) {
+            .navbar-nav .nav-item {
+                padding: 5px 0;
+            }
+        }
+        .search-form {
+            margin-top: 10px;
+        }
+        @media (max-width: 991px) {
+            .search-form {
+                margin-top: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -23,7 +39,7 @@
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
             <ul class="navbar-nav">
                 {% if user.is_authenticated and user.username != "admin" %}
                 <li class="nav-item">
@@ -32,6 +48,7 @@
                 <li class="nav-item d-flex align-items-center"> 
                     <a class="navbar-brand" href="/carrito">
                         <i class="fas fa-shopping-cart me-2"></i> Carrito 
+                    </a>
                 </li>
                 <li class="nav-item d-flex align-items-center"> 
                     <a class="navbar-brand" href="/favoritos">
@@ -46,7 +63,11 @@
                     </li>
                 {% endif %}
             </ul>
-            <ul class="navbar-nav ms-auto">
+            <form action="{% url 'buscar_productos' %}" method="GET" class="d-flex align-items-center search-form">
+                <input class="form-control me-2" type="search" placeholder="Buscar productos..." aria-label="Search" name="q">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+            <ul class="navbar-nav">
                 {% if not user.is_authenticated %}
                     <li class="nav-item">
                         <a href="/ingresar" class="nav-link">Iniciar Sesión</a>

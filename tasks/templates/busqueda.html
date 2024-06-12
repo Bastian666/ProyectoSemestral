@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Resultados de "{{ query }}"</h2>
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for producto in resultados %}
+        <div class="col">
+            <div class="card h-100">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="{{ producto.imagen.url }}" class="card-img-top img-thumbnail" alt="{{ producto.nombre }}">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ producto.nombre }}</h5>
+                            <p class="card-text">{{ producto.descripcion }}</p>
+                            <p class="card-text">Precio: ${{ producto.precio }}</p>
+                            <p class="card-text">{% if producto.stock > 0 %}Disponible{% else %}Agotado{% endif %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col">
+            <div class="alert alert-warning" role="alert">
+                No se encontraron resultados para "{{ query }}"
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

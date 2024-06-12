@@ -225,3 +225,11 @@ def vaciar_carrito(request):
 def actualizar_stock(request, producto_id):
     producto = get_object_or_404(Productos, id=producto_id)
     return redirect('carrito')  
+
+def buscar_productos(request):
+    query = request.GET.get('q')
+    if query:
+        resultados = Productos.objects.filter(nombre__icontains=query)
+        return render(request, 'busqueda.html', {'resultados': resultados, 'query': query})
+    else:
+        return render(request, 'home.html')

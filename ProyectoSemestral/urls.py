@@ -21,6 +21,7 @@ urlpatterns = [
     path('carrito/actualizar_stock/<int:producto_id>/', views.actualizar_stock, name='actualizar_stock'),  
         path('favoritos/', views.favoritos, name='favoritos'),
          path('toggle_favorito/<int:producto_id>/', views.toggle_favorito, name='toggle_favorito'),
+         path('buscar-productos/', views.buscar_productos, name='buscar_productos'),
 ]
 
 if settings.DEBUG:
