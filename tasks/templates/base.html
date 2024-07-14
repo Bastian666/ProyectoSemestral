@@ -27,6 +27,43 @@
                 margin-top: 0;
             }
         }
+        .notification {
+            position: relative;
+            margin-left: 15px;
+        }
+        .badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            padding: 5px 8px;
+            border-radius: 50%;
+            background-color: red;
+            color: white;
+        }
+        .notification-dropdown {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            width: 300px;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item:hover {
+            background-color: #f5f5f5;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -61,6 +98,9 @@
                     <li class="nav-item">
                         <a href="/productos" class="nav-link">Gestión de productos</a>
                     </li>
+                    <li class="nav-item">
+                        <a href="/ordenes" class="nav-link">Órdenes</a>
+                    </li>
                 {% endif %}
             </ul>
             <form action="{% url 'buscar_productos' %}" method="GET" class="d-flex align-items-center search-form">
@@ -80,6 +120,18 @@
                     <li class="nav-item">
                         <a href="/logout" class="nav-link">Salir</a>
                     </li>
+                    <li class="nav-item notification">
+                        <a href="#" class="nav-link" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge">3</span>
+                        </a>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <!-- Contenido de notificaciones aquí -->
+                            <div class="notification-item">Notificación 1</div>
+                            <div class="notification-item">Notificación 2</div>
+                            <div class="notification-item">Notificación 3</div>
+                        </div>
+                    </li>
                 {% endif %}
             </ul>
         </div>
@@ -88,5 +140,25 @@
 
 {% block content %}
 {% endblock %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+
+        notificationBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            notificationDropdown.classList.toggle('show');
+        });
+
+        // Cerrar dropdown si se hace clic fuera de él
+        window.addEventListener('click', function(event) {
+            if (!event.target.closest('.notification')) {
+                notificationDropdown.classList.remove('show');
+            }
+        });
+    });
+</script>
 </body>
 </html>

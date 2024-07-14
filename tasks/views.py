@@ -19,6 +19,12 @@ def home(request):
     productos = Productos.objects.all()  
     return render(request, 'home.html', {'productos': productos})
 
+@login_required
+def ordenes_de_compra(request):
+    if request.user.username != "admin":
+        return redirect('home')
+    return render(request, 'ordenes.html')
+
 #REGISTRARSE EN EL SISTEMA
 def registro (request):
     if request.method == 'GET':

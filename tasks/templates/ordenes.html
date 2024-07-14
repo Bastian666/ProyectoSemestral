@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% extends 'base.html' %}
+    <title>Administrador de Órdenes de Compra</title>
+</head>
+<body>
+    {% block content %}
+    <main>
+        <section class="p-5 bg-light">
+            <div class="container">
+                <h2 class="text-center text-primary pb-3">Crear Orden de Compra</h2>
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <form id="addOrderForm" class="shadow p-4 rounded bg-white">
+                            <div class="mb-3">
+                                <label for="userName" class="form-label">Nombre del Usuario:</label>
+                                <input type="text" id="userName" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="productName" class="form-label">Nombre del Producto:</label>
+                                <input type="text" id="productName" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Cantidad:</label>
+                                <input type="number" id="quantity" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Precio:</label>
+                                <input type="number" id="price" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Agregar Orden</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="p-5">
+            <div class="container">
+                <h2 class="text-center text-primary pb-3">Órdenes de Compra</h2>
+                <div id="ordersContainer" class="row justify-content-center">
+                    <!-- Aquí se mostrarán las órdenes de compra -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.getElementById('addOrderForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const userName = document.getElementById('userName').value;
+            const productName = document.getElementById('productName').value;
+            const quantity = document.getElementById('quantity').value;
+            const price = document.getElementById('price').value;
+
+            addOrder(userName, productName, quantity, price);
+
+            // Limpiar el formulario
+            document.getElementById('addOrderForm').reset();
+        });
+
+        function addOrder(userName, productName, quantity, price) {
+            const ordersContainer = document.getElementById('ordersContainer');
+
+            const orderDiv = document.createElement('div');
+            orderDiv.classList.add('col-md-4', 'order');
+
+            orderDiv.innerHTML = `
+                <div class="card mb-3 shadow-sm p-3 rounded">
+                    <div class="card-body">
+                        <p><strong>Usuario:</strong> ${userName}</p>
+                        <p><strong>Producto:</strong> ${productName}</p>
+                        <p><strong>Cantidad:</strong> ${quantity}</p>
+                        <p><strong>Precio:</strong> ${price}</p>
+                    </div>
+                </div>
+            `;
+
+            ordersContainer.appendChild(orderDiv);
+        }
+    </script>
+    {% endblock %}
+</body>
+</html>
